@@ -33,6 +33,9 @@ export default function Navbar() {
           {user.username}
           {isAdmin && <span className="badge">Admin</span>}
         </span>
+        <NavLink to="/account" className="btn btn-secondary btn-small">
+          Account
+        </NavLink>
         <button className="btn btn-secondary" onClick={handleLogout}>
           Logout
         </button>

@@ -49,6 +49,68 @@ function AllFilesTab() {
   );
 }
 
+function ResetPasswordRow({ user, onDone, onCancel }) {
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setError("");
+    if (newPassword !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      await apiClient.post(`/admin/users/${user.id}/reset-password`, { new_password: newPassword });
+      onDone(`Password for "${user.username}" was reset.`);
+    } catch (err) {
+      const detail = err.response?.data?.detail;
+      setError(Array.isArray(detail) ? detail.map((d) => d.message).join(" ") : detail || "Could not reset password.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <tr>
+      <td colSpan={5}>
+        <form onSubmit={handleSubmit} style={{ display: "flex", gap: 8, alignItems: "flex-start", flexWrap: "wrap" }}>
+          <input
+            type="password"
+            placeholder="New password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            autoComplete="new-password"
+            minLength={10}
+            required
+            style={{ width: 200 }}
+          />
+          <input
+            type="password"
+            placeholder="Confirm password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            autoComplete="new-password"
+            minLength={10}
+            required
+            style={{ width: 200 }}
+          />
+          <button className="btn btn-small" type="submit" disabled={submitting}>
+            {submitting ? "Resetting…" : "Confirm reset"}
+          </button>
+          <button className="btn btn-secondary btn-small" type="button" onClick={onCancel}>
+            Cancel
+          </button>
+          {error && <p className="alert alert-error" style={{ width: "100%", margin: 0 }}>{error}</p>}
+        </form>
+      </td>
+    </tr>
+  );
+}
+
 function ManageUsersTab() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -57,6 +119,8 @@ function ManageUsersTab() {
   const [formSuccess, setFormSuccess] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({ username: "", email: "", password: "", is_admin: false });
+  const [resettingUserId, setResettingUserId] = useState(null);
+  const [resetSuccess, setResetSuccess] = useState("");
 
   const loadUsers = useCallback(async () => {
     setLoading(true);
@@ -153,6 +217,7 @@ function ManageUsersTab() {
       <div className="card">
         <h2>Existing users</h2>
         {error && <p className="alert alert-error">{error}</p>}
+        {resetSuccess && <p className="alert alert-success">{resetSuccess}</p>}
         {loading ? (
           <p className="muted">Loading users…</p>
         ) : (
@@ -168,19 +233,34 @@ function ManageUsersTab() {
                 </tr>
               </thead>
               <tbody>
-                {users.map((u) => (
-                  <tr key={u.id}>
-                    <td>{u.username}</td>
-                    <td>{u.email}</td>
-                    <td>{u.is_admin ? "Admin" : "User"}</td>
-                    <td>{u.is_active ? "Active" : "Disabled"}</td>
-                    <td className="actions">
-                      <button className="btn btn-small" onClick={() => toggleActive(u)}>
-                        {u.is_active ? "Disable" : "Enable"}
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {users.map((u) =>
+                  resettingUserId === u.id ? (
+                    <ResetPasswordRow
+                      key={u.id}
+                      user={u}
+                      onCancel={() => setResettingUserId(null)}
+                      onDone={(message) => {
+                        setResettingUserId(null);
+                        setResetSuccess(message);
+                      }}
+                    />
+                  ) : (
+                    <tr key={u.id}>
+                      <td>{u.username}</td>
+                      <td>{u.email}</td>
+                      <td>{u.is_admin ? "Admin" : "User"}</td>
+                      <td>{u.is_active ? "Active" : "Disabled"}</td>
+                      <td className="actions">
+                        <button className="btn btn-small" onClick={() => toggleActive(u)}>
+                          {u.is_active ? "Disable" : "Enable"}
+                        </button>
+                        <button className="btn btn-secondary btn-small" onClick={() => setResettingUserId(u.id)}>
+                          Reset password
+                        </button>
+                      </td>
+                    </tr>
+                  )
+                )}
               </tbody>
             </table>
           </div>

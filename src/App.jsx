@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import AccountSettingsPage from "./pages/AccountSettingsPage.jsx";
 import AdminLoginPage from "./pages/AdminLoginPage.jsx";
 import AdminPanelPage from "./pages/AdminPanelPage.jsx";
 import DashboardPage from "./pages/DashboardPage.jsx";
@@ -38,6 +39,16 @@ export default function App() {
           <AppShell>
             <ProtectedRoute requireAdmin>
               <AdminPanelPage />
+            </ProtectedRoute>
+          </AppShell>
+        }
+      />
+      <Route
+        path="/account"
+        element={
+          <AppShell>
+            <ProtectedRoute>
+              <AccountSettingsPage />
             </ProtectedRoute>
           </AppShell>
         }
