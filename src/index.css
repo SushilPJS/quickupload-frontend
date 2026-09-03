@@ -395,3 +395,63 @@ td.truncate {
     grid-template-columns: 1fr;
   }
 }
+
+.admin-auth-page {
+  background: #0f172a;
+}
+
+.admin-auth-card {
+  background: #1e293b;
+  border: 1px solid #334155;
+}
+
+.admin-auth-card h1,
+.admin-auth-card label,
+.admin-auth-card .muted:not(.admin-auth-tag) {
+  color: #e2e8f0;
+}
+
+.admin-auth-card .muted {
+  color: #94a3b8;
+}
+
+.admin-auth-card input {
+  background: #0f172a;
+  border-color: #334155;
+  color: #f1f5f9;
+}
+
+.admin-auth-card input:focus {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18);
+}
+
+.admin-logo {
+  background: #f59e0b;
+}
+
+.admin-auth-tag {
+  display: inline-block;
+  margin: 4px 0 12px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.admin-btn {
+  background: #f59e0b;
+  color: #1e293b;
+}
+
+.admin-btn:hover:not(:disabled) {
+  background: #d97706;
+}
+
+.admin-auth-card .auth-switch-link a {
+  color: #f59e0b;
+}

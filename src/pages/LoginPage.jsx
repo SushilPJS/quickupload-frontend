@@ -69,6 +69,9 @@ export default function LoginPage() {
         <p className="muted small auth-switch-link">
           New here? <Link to="/register">Create an account</Link>
         </p>
+        <p className="muted small auth-switch-link">
+          <Link to="/admin/login">Administrator sign in</Link>
+        </p>
       </form>
     </div>
   );
